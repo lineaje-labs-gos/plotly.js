@@ -1,0 +1,14 @@
+{% extends "main.jinja" %}
+{% block content %}
+<h2>JavaScript Figure Reference: <code>layout</code></h2>
+{% with parentlink=page.layout, block=page.layout, parentpath=page.layout, mustmatch=page.global, attribute=config["data"]["plot-schema"]["layout"]["layoutAttributes"] %}
+  {% include "block.jinja" %}
+{% endwith %}
+{% for trace in config["data"]["plot-schema"]["traces"] %}
+  {% if trace[1].layoutAttributes %}
+    {% with parentlink=page.layout, block=page.layout, parentpath=page.layout, attribute=trace[1].layoutAttributes %}
+      {% include "block.jinja" %}
+    {% endwith %}
+  {% endif %}
+{% endfor %}
+{% endblock %}

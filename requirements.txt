@@ -1,0 +1,7 @@
+beautifulsoup4
+html5validator
+jinja2
+mkdocs
+mkdocs-exclude
+python-frontmatter
+ruff

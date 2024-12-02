@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head_title %}<title>{{page["title"]}}</title>{% endblock %}
+    {% block head_includes %}{% endblock %}
+  </head>
+  <body>
+    <main>
+      {% block page_title %}<h1>{{page["title"]}}</h1>{% endblock %}
+
+      {# reach into the schema data and pull out details #}
+      {% if "full_name" not in page.meta %}
+        {# trace #}
+        {% set details=page.meta %}
+      {% else %}
+        {% set temp_key=page.meta.name.split(".")[-1] %}
+        {% set temp=config["data"]["plot-schema"]["layout"]["layoutAttributes"][temp_key] %}
+        {% if "_isSubplotObj" in temp %}
+          {# subplot #}
+          {% set details=temp %}
+        {% else %}
+          {# everything that isn't trace or subplot #}
+          {% set details=temp["items"].values() | first %}
+        {% endif %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

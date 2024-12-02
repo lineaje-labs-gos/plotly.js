@@ -16,3 +16,8 @@ tags
 !.circleci
 !.gitignore
 !.npmignore
+
+docs
+ref_pages
+__pycache__
+tmp

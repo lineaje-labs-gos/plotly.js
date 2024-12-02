@@ -1,0 +1,168 @@
+{#
+  Document a chunk of the API by iterating through plot schema JSON.
+  Note: this template may call itself recursively for structured objects.
+  - toplevel (bool): is this a top-level documentation entry?
+  - attribute (JSON): data to expand as documentation
+  - keys_to_ignore (set): keys that are *not* to be documented
+  - parentlink: slug for parent of this entry
+  - block: section or "nested" for nested invocations
+  - parentpath: possibly redundant?
+  - attribute: dictionary with details to document
+  - page: information pulled from YAML header of page
+    - name: name of top-level entry (e.g., "annotations")
+    - full_name (unused): qualified name (e.g., "layout.annotations")
+    - description (unused): one-sentence description of this item
+    - permalink (unused): path to output page
+#}
+{% set id=[parentlink, "-", page.name] | join %}
+{% if toplevel %}<a class="attribute-name" id="{{id}}" href="#{{parentlink}}-{{page.name}}">{{page.name}}</a>{% endif %}
+<br>
+<em>Parent:</em> <code>{{parentpath | replace('-', '.')}}</code>
+<ul>
+{% for key, obj in attribute.items() %}
+  {% if key not in keys_to_ignore %}
+  <li><code>{{key}}</code>
+    {% if obj is string %}
+      {{obj}}{# FIXME: backtick #}
+    {% elif obj.valType %}
+      <br>
+      {% if obj.valType == "enumerated" or obj.valType.values %}
+        <em>Type:</em>
+        {{ obj.valType }}
+        {% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %}
+	, one of (
+          {% for value in obj["values"] %}
+            {% if value != false and value != true %}<code>"{{value}}"</code>{% else %}<code>{{value}}</code>{% endif %}
+            {% if not loop.last %}|{% endif %}
+          {% endfor %}
+        )
+
+      {% elif obj.valType == "number" or obj.valType == "integer" %}
+        {% if obj["min"] and obj["max"] %}
+          <em>Type:</em> {{ obj.valType }}{% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %} between or equal to {{obj["min"]}} and {{obj["max"]}}
+        {% elif obj["min"] %}
+          <em>Type:</em> {{ obj.valType }}{% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %} greater than or equal to {{obj["min"]}}
+        {% elif obj["max"] %}
+          <em>Type:</em> {{ obj.valType }}{% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %} less than or equal to {{obj["min"]}}
+        {% else %}
+          <em>Type:</em> {{ obj.valType }}{% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %}
+        {% endif %}
+
+      {% elif obj.valType == "boolean" %}
+        <em>Type:</em> {{ obj.valType }}{% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %}
+
+      {% elif obj.valType == "flaglist" %}
+        <em>Type:</em> {{ obj.valType }} string.
+
+        Any combination of
+        {% for value in obj["flags"] %}
+          {% if value != false and value != true %}
+            <code>"{{value}}"</code>
+          {% else %}
+            <code>{{value}}</code>
+          {% endif %}
+            {% if not loop.last %}, {% endif %}
+	{% endfor %}
+        joined with a <code>"+"</code>
+
+        {% if obj["extras"] %}
+          OR
+          {% for value in obj["extras"] %}
+            {% if value != false and value != true %}
+              <code>"{{value}}"</code>
+            {% else %}
+              <code>{{value}}</code>
+            {% endif %}
+            {% if not loop.last %} or {% endif %}
+          {% endfor %}.
+        {% endif %}
+
+        <br>
+        <em>Examples:</em>
+        <code>"{{obj["flags"][0]}}"</code>,
+        <code>"{{obj["flags"][1]}}"</code>,
+        <code>"{{obj["flags"][0]}}+{{obj["flags"][1]}}"</code>
+        {% if obj["flags"][2] %}, <code>"{{obj["flags"][0]}}+{{obj["flags"][1]}}+{{obj["flags"][2]}}"</code>{% endif %}
+        {% if obj["extras"] %}, <code>"{{obj["extras"][0]}}"</code>{% endif %}
+
+      {% elif obj.valType == "data_array" %}
+          <em>Type:</em> {{obj.valType}}
+
+      {% elif obj.valType == "info_array" %}
+        <em>Type:</em> {array}
+
+      {% elif obj.valType == "color" %}
+        <em>Type:</em> {{ obj.valType }}{% if obj["arrayOk"] %} or array of {{ obj.valType }}s{% endif %}
+
+      {% elif obj.valType == "any" %}
+        <em>Type:</em> number or categorical coordinate string
+
+      {% elif obj.valType == "string" %}
+        <em>Type:</em> string{% if obj["arrayOk"] %} or array of strings{% endif %}
+
+      {% else %}
+        <em>Type:</em> {{ obj.valType }}
+      {% endif %}
+
+      {% if obj["role"] == "object" %}
+        {% if obj["items"] %}
+          <em>Type:</em> array of objects
+        {% else %}
+          <em>Type:</em> object
+        {% endif %}
+      {% endif %}
+    {% endif %}
+
+    {% if obj["dflt"] %}
+      {% if obj["valType"] == "flaglist" %}
+        <br><em>Default:</em> <code>"{{ obj["dflt"] }}"</code>
+      {% else %}
+        <br><em>Default:</em>
+	<code>
+        {%- if obj["dflt"] == "" -%}
+          ""
+        {%- elif obj["valType"] == "colorscale" -%}
+          [{% for d in obj["dflt"] %}[{{d | join(", ")}}], {% endfor %}]
+        {%- elif obj["valType"] == "info_array" or obj["valType"] == "colorlist" -%}
+          [{{obj["dflt"] | join(", ")}}]
+        {%- elif obj["valType"] == "string" or obj["valType"] == "color" or obj["dflt"] == "auto" -%}
+          "{{ obj["dflt"] }}"
+        {%- elif obj["valType"] == "enumerated" and obj["dflt"] != true and obj["dflt"] != false -%}
+          "{{ obj["dflt"] }}"
+        {%- else -%}
+          {{obj["dflt"]}}
+        {%- endif %}
+        </code>
+      {% endif %}
+    {% endif %}
+
+    {% if obj["items"] and obj["valType"] != "info_array" %}
+
+      <br><em>Type:</em> array of object where
+      each object has one or more of the keys listed below.
+      {% if page.name == "annotations" %}
+        {% if not obj["description"] %}
+          <br>An annotation is a text element that can be placed anywhere in the plot. It can be positioned with respect to relative coordinates in the plot or with respect to the actual data coordinates of the graph. Annotations can be shown with or without an arrow.
+        {% endif %}
+      {% endif %}
+    {% elif obj["role"] == "object" %}
+      <br><em>Type:</em> object containing one or more of the keys listed below.
+    {% endif %}
+
+    {% if obj["description"] and obj["description"]!= "" %}
+      <br>
+      {{ obj["description"] | replace("*", '"') | escape}}{# FIXME: backtick #}
+    {% endif %}
+
+    {% if obj["role"] == "object" %}
+      {% set localparentlink=[parentlink, "-", page.name] | join %}
+      {% set localparentpath=[parentpath, "-", page.name] | join %}
+      {% with toplevel=False, parentlink=localparentlink, block="nested", parentpath=localparentpath, attribute=obj %}
+        {% include "block.jinja" %}
+      {% endwith %}
+    {% endif %}
+
+  </li>
+  {% endif %}
+{% endfor %}
+</ul>

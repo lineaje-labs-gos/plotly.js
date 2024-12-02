@@ -1,0 +1,7 @@
+{% extends "main.jinja" %}
+{% block content %}
+<h2>JavaScript Figure Reference: <code>{{page.full_name}}</code></h2>
+{% with toplevel=true, parentlink=page.layout, block=page.layout, parentpath=page.layout, attribute=details %}
+  {% include "block.jinja" %}
+{% endwith %}
+{% endblock %}
