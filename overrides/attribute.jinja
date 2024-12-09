@@ -1,6 +1,6 @@
-{% extends "main.jinja" %}
+{% extends "base.html" %}
 {% block content %}
-
+  {{ super() }}
   {# reach into the schema data and pull out details #}
   {% if "full_name" not in page.meta %}
     {# trace #}
@@ -16,10 +16,8 @@
       {% set details=temp["items"].values() | first %}
     {% endif %}
   {% endif %}
-
   <h2>JavaScript Figure Reference: <code>{{page.full_name}}</code></h2>
   {% with toplevel=true, parentlink=page.layout, block=page.layout, parentpath=page.layout, attribute=details %}
     {% include "block.jinja" %}
   {% endwith %}
-
 {% endblock %}

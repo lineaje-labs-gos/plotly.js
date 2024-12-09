@@ -3,5 +3,6 @@ html5validator
 jinja2
 mkdocs
 mkdocs-exclude
+mkdocs-material
 python-frontmatter
 ruff

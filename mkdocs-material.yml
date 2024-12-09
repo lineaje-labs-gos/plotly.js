@@ -1,0 +1,18 @@
+site_name: Plotly Libraries
+site_description: Documentation for Plotly libraries
+site_url: https://example.com
+copyright: Plotly Inc.
+
+docs_dir: ref_pages
+site_dir: docs
+theme:
+  name: material
+  custom_dir: overrides
+
+plugins:
+  - exclude:
+      regex:
+        - '.*\.jinja'
+  - mkdocs-data-loader:
+      dir: dist
+      key: data

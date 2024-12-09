@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+{{ super() }}
+
+<h2>JavaScript Figure Reference: <code>page.trace</code> Traces</h2>
+{% with trace_name=page.meta.trace, trace_data=config["data"]["plot-schema"].traces[page.meta.trace] %}
+  <div class="description">
+    A <code>{{trace_name}}</code> trace is an object with the key <code>"type"</code> equal to <code>"{{trace_data.attributes.type}}"</code>
+    (i.e. <code>{"type": "{{trace_data.attributes.type}}"}</code>) and any of the keys listed below.
+    <br>
+    {{trace_data.meta.description}}{# FIXME: backtick #}
+  </div>
+
+  {% set localparentlink=trace_name %}
+  {% set localparentpath="FIXME" %}
+  {% set attribute=trace_data.attributes %}
+  {% with parentlink=localparentlink, block="data", parentpath=localparentpath %}
+    {% include "block.jinja" %}
+  {% endwith %}
+
+{% endwith %}
+{% endblock %}
+

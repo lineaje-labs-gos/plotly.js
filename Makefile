@@ -6,9 +6,13 @@ SCHEMA=test/plot-schema.json
 REF_PAGES=ref_pages
 THEME=theme
 
-## site: rebuild with MkDocs
-site:
-	mkdocs build
+## material: rebuild with MkDocs using mkdocs-material and 'overrides' directory
+material:
+	mkdocs build -f mkdocs-material.yml
+
+## vanilla: rebuild with MkDocs using 'theme' directory (our own)
+vanilla:
+	mkdocs build -f mkdocs-vanilla.yml
 
 ## pages: make all the pages
 pages:
