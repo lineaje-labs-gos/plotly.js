@@ -2,7 +2,9 @@
 <html>
   <head>
     {% block head_title %}<title>{{page["title"]}}</title>{% endblock %}
-    {% block head_includes %}{% endblock %}
+    {% block head_includes %}
+    <link href="{{base_url}}/mccole.css" rel="stylesheet" type="text/css"/>
+    {% endblock %}
   </head>
   <body>
     <main>

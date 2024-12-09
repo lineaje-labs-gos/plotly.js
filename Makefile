@@ -68,6 +68,7 @@ stubs: ${SCHEMA}
 	--pages ${REF_PAGES} \
 	--schema ${SCHEMA} \
 	--verbose
+	cp assets/*.css ${REF_PAGES}
 
 ## validate: check the generated HTML
 validate:
