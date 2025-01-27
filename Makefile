@@ -74,7 +74,7 @@ stubs: ${SCHEMA}
 validate:
 	@html5validator --root docs
 
-## regenerate JavaScript schema
+## schema: regenerate JavaScript schema
 schema:
 	npm run schema dist
 
