@@ -1,13 +1,19 @@
 {
   "name": "plotly.js",
-  "version": "1.58.5",
+  "version": "1.58.5-lineaje-01",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
+  "contributors": [
+    {
+      "name": "Lineaje DepFixer",
+      "email": "221268890+Lineaje-DepFixer@users.noreply.github.com"
+    }
+  ],
   "main": "./lib/index.js",
   "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/plotly/plotly.js.git"
+    "url": "https://github.com/lineaje-labs-gos/plotly.js"
   },
   "bugs": {
     "url": "https://github.com/plotly/plotly.js/issues"
