@@ -33,12 +33,19 @@ module.exports = function nestedProperty(container, propStr) {
         throw 'bad property string';
     }
 
-    var j = 0;
+   
     var propParts = propStr.split('.');
     var indexed;
     var indices;
-    var i;
-
+    var i, j;
+    
+    for(j = 0; j < propParts.length; j++) {
+        // guard against polluting __proto__ and other internals
+        if(String(propParts[j]).slice(0, 2) === '__') {
+            throw 'bad property string';
+        }
+    }
+    j = 0;
     // check for parts of the nesting hierarchy that are numbers (ie array elements)
     while(j < propParts.length) {
         // look for non-bracket chars, then any number of [##] blocks
